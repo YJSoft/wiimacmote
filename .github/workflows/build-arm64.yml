@@ -1,0 +1,54 @@
+name: Build macOS arm64 app
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and upload arm64 app
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Verify source and run core tests
+        run: ./Scripts/verify-source.sh
+
+      - name: Build and ad-hoc sign arm64 app
+        run: ./Scripts/build.sh --arm64
+
+      - name: Verify and package app
+        run: |
+          APP="build/DerivedData/Build/Products/Release/WiiMacMote.app"
+          test "$(lipo -archs "$APP/Contents/MacOS/WiiMacMote")" = "arm64"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          ditto -c -k --sequesterRsrc --keepParent "$APP" build/WiiMacMote-arm64.zip
+
+      - name: Upload app
+        uses: actions/upload-artifact@v7
+        with:
+          name: WiiMacMote-arm64
+          path: build/WiiMacMote-arm64.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

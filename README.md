@@ -27,6 +27,7 @@ WiiMacMote is a macOS utility for pairing Nintendo Wii controllers over Bluetoot
 - Select the `WiiMacMote` scheme and `My Mac` destination.
 - Build and run from Xcode.
 - Or run `./Scripts/build.sh`.
+- To build only for Apple Silicon, run `./Scripts/build.sh --arm64`.
 - Run source checks with `./Scripts/verify-source.sh`.
 
 Local copied apps may need fresh ad-hoc signing for macOS Bluetooth permission:
@@ -40,6 +41,24 @@ You can also run:
 ```sh
 ./Scripts/build.sh --sign-installed
 ```
+
+## CI builds (arm64)
+
+The `Build macOS arm64 app` GitHub Actions workflow runs on pushes, pull requests,
+and manual runs from the **Actions** tab. It uses macOS 15 and Xcode 16.4 to run
+source checks and core tests, build the Release app for arm64, and ad-hoc sign it.
+The workflow verifies the architecture and signature before packaging the app.
+
+To download a build, open a successful workflow run under **Actions** and download
+the **WiiMacMote-arm64** artifact. Extract the artifact ZIP, then extract the
+included `WiiMacMote-arm64.zip` and move `WiiMacMote.app` to `/Applications`.
+Artifacts are retained for 30 days. The app requires Apple Silicon and macOS 14
+or newer.
+
+No signing secrets are required. CI builds are ad-hoc signed, not Developer ID
+signed or notarized, so macOS may require approval in **System Settings > Privacy
+& Security** before opening the downloaded app. If Bluetooth permission does not
+work after copying the app, use the local ad-hoc signing command above.
 
 ## Pairing
 

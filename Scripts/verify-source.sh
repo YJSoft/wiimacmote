@@ -6,7 +6,7 @@ cd "$ROOT"
 
 plutil -lint \
   wiimacmote/Info.plist \
-  wiimacmote/WiiMacMote.entitlements \
+  wiimacmote/wiimacmote.entitlements \
   WiiMacMote.xcodeproj/project.pbxproj
 
 find "$ROOT" -name ".DS_Store" -type f -delete
@@ -30,7 +30,7 @@ for path in [
 for path in (root / 'wiimacmote/Assets.xcassets').rglob('*.json'):
     json.loads(path.read_text())
 
-with (root / 'wiimacmote/WiiMacMote.entitlements').open('rb') as handle:
+with (root / 'wiimacmote/wiimacmote.entitlements').open('rb') as handle:
     entitlements = plistlib.load(handle)
 assert 'com.apple.developer.hid.virtual.device' not in entitlements, 'The app must not declare the restricted virtual-HID entitlement'
 
