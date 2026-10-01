@@ -1,3 +1,7 @@
+# About fork
+
+Fork to enable CI to build app
+
 # WiiMacMote
 
 WiiMacMote is a macOS utility for pairing Nintendo Wii controllers over Bluetooth.
